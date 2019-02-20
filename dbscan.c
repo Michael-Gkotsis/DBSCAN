@@ -175,7 +175,7 @@ for(i = 0; i < n; i++)
     //Finding the Neighborhood
 
        //Calculating the distance of Xi with each unvisited element
-           for(j = i + 1; j < n; j++)
+           for(j = 0; j < n; j++)
            {
              if(visited[j] != 1)
              {
@@ -238,7 +238,7 @@ for(i = 0; i < n; i++)
     /* -------------------------------------------------------------------------- */
     //Finding the distance for each Element of our initial Neighborhood with each Element of the dataset
     //Each [j][h] Combination Holds the distances of Current j element with each h element
-              for(j = i + 1; j < n; j++)
+              for(j = 0; j < n; j++)
               {
                 if(temp[j] == 1)
                 {
@@ -251,7 +251,7 @@ for(i = 0; i < n; i++)
                 }
               }
 /* -------------------------------------------------------------------------- */
-for(j = i + 1; j < n; j++)
+for(j = 0; j < n; j++)
 {
   //If temp[j] = 1 means that the current element belongs to Neighborhood
   if(temp[j] == 1)
