@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
   printf("\n Elements:%d \n", n-1);
   printf("\n Dimensions:%d \n", dim);
-
+n--;
 
   printf("Give the amount of Minimum Points: ");
   scanf("%d",&minPoints );
@@ -57,52 +57,52 @@ int main(int argc, char *argv[])
       // All the necessary memory allocation
 
          double **X;  // Array of Elements
-         X = calloc(n, sizeof(double));
+         X = (double **)calloc(n, sizeof(double *));
          for (d = 0; d < n; d++)
-         X[d] = calloc(dim, sizeof(double));
+         X[d] = (double *)calloc(dim, sizeof(double));
 
          int *Cluster;
-         Cluster = calloc(n,sizeof(int));
+         Cluster = (int *)calloc(n,sizeof(int));
 
          for(i = 0; i < n; i++)
          Cluster[i] = -1;
 
          int *visited; //Array for knowning which elements are visited and which are not
-         visited = calloc(n,sizeof(int));
+         visited =(int *) calloc(n,sizeof(int));
 
          for(i = 0; i < n; i++)
          visited[i] = 0; //0 for unvisited , 1 for visited
 
          double *distance; //array for holding distances of element i with each db element
-         distance = calloc(n,sizeof(double));
+         distance =(double *) calloc(n,sizeof(double));
 
          int *numPoints; //Array for holding the Neighborhood's size of each i element
-         numPoints = calloc(n,sizeof(int));
+         numPoints =(int *) calloc(n,sizeof(int));
 
          int *belong; //array for holding boolean value of an element belong to a Neighborhood
-         belong = calloc(n,sizeof(int));
+         belong = (int *)calloc(n,sizeof(int));
 
          int *nBelong; //array for holding boolean value of an element belong to a Neighborhood
-         nBelong = calloc(n,sizeof(int));
+         nBelong = (int *)calloc(n,sizeof(int));
 
          int *Noise; //Flag for points that are Noise
-         Noise = calloc(n,sizeof(int));
+         Noise =(int *) calloc(n,sizeof(int));
          for(i = 0; i < n; i++)
          Noise[i] = 0;
 
          int *Core;  //Flag for core points,  0 for border, 1 for Core
-         Core = calloc(n,sizeof(int));
+         Core = (int *) calloc(n,sizeof(int));
          for(i = 0; i < n; i++)
          Core[i] = 0;
 
          double **distance2 ;   //Array for holding Distances for each core point of a Neighborhood with Each Element of the dataset
-         distance2 = calloc(n,sizeof(double));
+         distance2 = (double **) calloc(n,sizeof(double *));
          for(i = 0; i < n; i++)
-         distance2[i] = calloc(n,sizeof(double));
+         distance2[i] =(double *) calloc(n,sizeof(double));
 
 /* -------------------------------------------------------------------------- */
       // Passing elements to Array X[n][dim]
-      n--;
+
 
 
             X = getData(Dataset,n,dim,X);
@@ -337,7 +337,8 @@ free(fileName);
 }
 
 /* -------------------------------------------------------------------------- */
-
+for(i = 0; i < n; i++)
+free(X[i]);
 free(X);
 free(Cluster);
 free(visited);
@@ -347,6 +348,8 @@ free(belong);
 free(numPoints);
 free(distance);
 free(Core);
+for(i = 0; i < n; i++)
+free(distance2[i]);
 free(distance2);
 
 
