@@ -8,18 +8,18 @@
 int main(int argc, char *argv[])
 {
 
-   int dim = 0;         // Dimensions of Elements
-   int n = 0;           // n Elements
-   int i,j,d;           // i counter for n, j counter for Neighborhood Elements, d counter for dimensions
+unsigned int dim = 0;         // Dimensions of Elements
+   unsigned int n = 0;           // n Elements
+  unsigned int i,j,d;           // i counter for n, j counter for Neighborhood Elements, d counter for dimensions
    double minDist;      // Minimum Distance for a point to be assigned to clusters
-   int minPoints;       // Minimum points for a cluster to be created
-   int CounterNoise=0;  // Counter for Noise Elements
-   int cluster = 0;     // Cluster index
-   int h,k;             // h counter for Neighborhood Distance Calculation, k counter for files
+   unsigned int minPoints;       // Minimum points for a cluster to be created
+   unsigned int CounterNoise=0;  // Counter for Noise Elements
+   unsigned int cluster = 0;     // Cluster index
+   unsigned int h,k;             // h counter for Neighborhood Distance Calculation, k counter for files
    clock_t start, end;  // Variables for counting execution time
    char filename[40];
    char c;
-   int choise = 0;
+   unsigned int choise = 0;
 /* -------------------------------------------------------------------------- */
   // Reading Dataset, counting n elements, assigning to X Array
 
@@ -56,49 +56,49 @@ n--;
   /* -------------------------------------------------------------------------- */
       // All the necessary memory allocation
 
-         double **X;  // Array of Elements
-         X = (double **)calloc(n, sizeof(double *));
-         for (d = 0; d < n; d++)
-         X[d] = (double *)calloc(dim, sizeof(double));
+         float *X;  // Array of Elements
+         X = (float *)calloc(n*dim, sizeof(float));
 
-         int *Cluster;
+
+        unsigned int *Cluster;
          Cluster = (int *)calloc(n,sizeof(int));
 
-         for(i = 0; i < n; i++)
-         Cluster[i] = -1;
 
-         int *visited; //Array for knowning which elements are visited and which are not
+          unsigned  int *visited; //Array for knowning which elements are visited and which are not
          visited =(int *) calloc(n,sizeof(int));
 
-         for(i = 0; i < n; i++)
-         visited[i] = 0; //0 for unvisited , 1 for visited
 
-         double *distance; //array for holding distances of element i with each db element
-         distance =(double *) calloc(n,sizeof(double));
 
-         int *numPoints; //Array for holding the Neighborhood's size of each i element
+         float *distance; //array for holding distances of element i with each db element
+         distance =(float *) calloc(n,sizeof(float));
+
+          unsigned int *numPoints; //Array for holding the Neighborhood's size of each i element
          numPoints =(int *) calloc(n,sizeof(int));
 
-         int *belong; //array for holding boolean value of an element belong to a Neighborhood
+          unsigned int *belong; //array for holding boolean value of an element belong to a Neighborhood
          belong = (int *)calloc(n,sizeof(int));
 
-         int *nBelong; //array for holding boolean value of an element belong to a Neighborhood
+        unsigned int *nBelong; //array for holding boolean value of an element belong to a Neighborhood
          nBelong = (int *)calloc(n,sizeof(int));
 
-         int *Noise; //Flag for points that are Noise
+      unsigned int *Noise; //Flag for points that are Noise
          Noise =(int *) calloc(n,sizeof(int));
-         for(i = 0; i < n; i++)
-         Noise[i] = 0;
 
-         int *Core;  //Flag for core points,  0 for border, 1 for Core
+
+      unsigned int *Core;  //Flag for core points,  0 for border, 1 for Core
          Core = (int *) calloc(n,sizeof(int));
-         for(i = 0; i < n; i++)
-         Core[i] = 0;
 
-         double **distance2 ;   //Array for holding Distances for each core point of a Neighborhood with Each Element of the dataset
-         distance2 = (double **) calloc(n,sizeof(double *));
-         for(i = 0; i < n; i++)
-         distance2[i] =(double *) calloc(n,sizeof(double));
+
+        float *distance2 ;   //Array for holding Distances for each core point of a Neighborhood with Each Element of the dataset
+         distance2 = (float *) calloc(n*n,sizeof(float));
+
+         for(i = n; i--;)
+         {
+         Core[i] = 0;
+         Cluster[i] = -1;
+          visited[i] = 0; //0 for unvisited , 1 for visited
+           Noise[i] = 0;
+        }
 
 /* -------------------------------------------------------------------------- */
       // Passing elements to Array X[n][dim]
@@ -113,7 +113,7 @@ n--;
 
 start = clock();
 /*-----------------------Starting DBSCAN--------------------------------------*/
-for(i = 0; i < n; i++)
+for(i = n; i--;)
 {
    if(visited[i] != 1) //Checking if the Element is unvisited or not to proceed
    {
@@ -123,16 +123,16 @@ for(i = 0; i < n; i++)
     //Finding the Neighborhood
 
        //Calculating the distance of Xi with each unvisited element
-           for(j = 0; j < n; j++)
+           for(j = n; j--;)
            {
              if(j != i)
              {
               belong[j] = 0; // Mark temp 0 for current Point, used for reset
                  distance[j] = 0; //Reset the distance before calculating for current point
-                  for(d = 0; d < dim; d++)
+                  for(d = dim; d--;)
                   {
   //Calculating and storing distances of Xi element with the rest of the points
-                 distance[j] += (X[j][d] - X[i][d])*(X[j][d] - X[i][d]);
+                 distance[j] += (X[j*dim + d] - X[i*dim + d])*(X[j*dim + d] - X[i*dim + d]);
                   }
                   distance[j] = sqrt(distance[j]);
 
@@ -170,7 +170,7 @@ for(i = 0; i < n; i++)
 
     /* -------------------------------------------------------------------------- */
     //Passing the rest of Neighborhood to array C
-              for(j = 0; j < n; j++)
+              for(j = n; j--;)
               {
       //If belong[j] = 1 means that the current element belongs to Neighborhood
       //and then you pass it to array C with the current Cluster Value to
@@ -185,23 +185,23 @@ for(i = 0; i < n; i++)
     /* -------------------------------------------------------------------------- */
     //Finding the distance for each Element of our initial Neighborhood with each Element of the dataset
     //Each [j][h] Combination Holds the distances of Current j element with each h element
-              for(j = 0; j < n; j++)
+              for(j = n; j--;)
               {
                 if(belong[j] == 1)
                 {
-                  for(h = 0; h < n; h++)
+                  for(h = n; h--;)
                     {
-                    distance2[j][h] = 0;
-                    for(d = 0; d < dim; d++)
-                      distance2[j][h] += (X[h][d] - X[j][d])*(X[h][d] - X[j][d]);
+                    distance2[j*n + h] = 0;
+                    for(d = dim; d--;)
+                      distance2[j*n + h] += (X[h*dim + d] - X[j*dim + d])*(X[h*dim + d] - X[j*dim + d]);
 
-                      distance2[j][h] = sqrt(distance2[j][h]);
+                      distance2[j*n + h] = sqrt(distance2[j*n + h]);
                     }
 
                 }
               }
 /* -------------------------------------------------------------------------- */
-for(j = 0; j < n; j++)
+for(j = n; j--;)
 {
   //If belong[j] = 1 means that the current element belongs to Neighborhood
   if(belong[j] == 1)
@@ -209,12 +209,12 @@ for(j = 0; j < n; j++)
     /* -------------------------------------------------------------------------- */
   //Calculating and Storing the Neighborhood of each Initial Neighborhood Element
      numPoints[j] = 0;
-    for(h = 0; h < n; h++)
+    for(h = n; h--;)
     {
       //Reseting temp2 for current h element
       nBelong[h] = 0;
       //Comparing Distance of Current h element with minDist
-       if(distance2[j][h] <= minDist)
+       if(distance2[j*n + h] <= minDist)
         {
           //if h element is found to belong to j's element Neighborhood
           //set nBelong[h] = 1 and increase the Neighborhood's size
@@ -249,7 +249,7 @@ for(j = 0; j < n; j++)
 //if it is found as Core pass it's Neighborhood to it's cluster,
 //Set Core = 1
       Core[j] = 1;
-      for(h = 0; h < n; h++){
+      for(h = n; h--;){
         //If nBelong[h] = 1 means that element h belongs to j's Neighborhood
       if(nBelong[h] == 1)
       {
@@ -294,7 +294,7 @@ double total_time = ((double) (end - start)) / CLOCKS_PER_SEC;
 //
 //   }
 CounterNoise = 0;
-for(i = 0; i < n; i++)
+for(i = n; i--;)
 {
   if(Noise[i] == 1)
   {
@@ -315,11 +315,11 @@ FILE* NoiseFile;
 
 NoiseFile = fopen("FinalNoise.txt","w");
 
-for(j = 0; j < n; j++){
+for(j = n; j--;){
   if(Noise[j] == 1)
   {
-    for(d = 0; d < dim; d++)
-    fprintf(NoiseFile, "%lf ",X[j][d] );
+    for(d = dim; d--;)
+    fprintf(NoiseFile, "%lf ",X[j*dim + d] );
 
     fprintf(NoiseFile, "\n");
   }
@@ -337,8 +337,7 @@ free(fileName);
 }
 
 /* -------------------------------------------------------------------------- */
-for(i = 0; i < n; i++)
-free(X[i]);
+
 free(X);
 free(Cluster);
 free(visited);
@@ -348,8 +347,7 @@ free(belong);
 free(numPoints);
 free(distance);
 free(Core);
-for(i = 0; i < n; i++)
-free(distance2[i]);
+
 free(distance2);
 
 
